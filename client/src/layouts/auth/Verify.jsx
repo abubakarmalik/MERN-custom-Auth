@@ -93,7 +93,7 @@ const Verify = () => {
   };
 
   const handleClieckResend = () => {
-    setCountdown(5);
+    setCountdown(120);
     setIsResendVisible(false);
     setResetCountdown((prev) => !prev); // Toggle the reset state
     console.log('Resend button clicked');
