@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CountdownTimer from '../../components/CountdownTimer';
 
 const ErrorMessage = ({ touched, error }) => {
   return touched && error ? (
@@ -17,6 +18,9 @@ const Verify = () => {
   const verifyOtp = useSelector((state) => state.authReducer.verifyotp);
   const errorState = useSelector((state) => state.authReducer.errorMessage);
   const [isLoading, setIsloading] = useState(false);
+  const [countdown, setCountdown] = useState(120);
+  const [isResendVisible, setIsResendVisible] = useState(false);
+  const [resetCountdown, setResetCountdown] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -88,6 +92,13 @@ const Verify = () => {
     });
   };
 
+  const handleClieckResend = () => {
+    setCountdown(5);
+    setIsResendVisible(false);
+    setResetCountdown((prev) => !prev); // Toggle the reset state
+    console.log('Resend button clicked');
+  };
+
   return (
     <>
       <ToastContainer
@@ -143,6 +154,25 @@ const Verify = () => {
                 touched={formik.touched.otp}
                 error={formik.errors.otp}
               />
+              <div className='flex justify-between px-2'>
+                <button
+                  type='button'
+                  onClick={handleClieckResend}
+                  disabled={!isResendVisible}
+                  className={`${
+                    isResendVisible ? 'text-gray-900' : 'text-gray-400'
+                  }`}
+                >
+                  Resend code?
+                </button>
+                {countdown > 0 && (
+                  <CountdownTimer
+                    initialTime={countdown}
+                    onTimeout={() => setIsResendVisible(true)}
+                    reset={resetCountdown}
+                  />
+                )}
+              </div>
             </div>
             <div>
               {isLoading ? (

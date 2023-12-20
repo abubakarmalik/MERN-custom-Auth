@@ -18,7 +18,7 @@ const signupUser = async (req, res) => {
 
     // generate OTP
     const otp = generateOTP(6);
-    const otpExpiration = Date.now() + 5 * 60 * 1000; // 5 minutes in milliseconds
+    const otpExpiration = Date.now() + 2 * 60 * 1000; // 5 minutes in milliseconds
 
     // Hash password
     const hash = await bcrypt.hash(password, 10);
@@ -48,7 +48,7 @@ const signupUser = async (req, res) => {
       } catch (error) {
         console.error('Error updating user:', error);
       }
-    }, 5 * 60 * 1000);
+    }, 2 * 60 * 1000);
 
     // Respond with user details
     return res
