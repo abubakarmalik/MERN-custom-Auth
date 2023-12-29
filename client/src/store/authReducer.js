@@ -4,12 +4,14 @@ import {
   SIGNOUT,
   AUTHENTICATED,
   OTPVERIFY,
+  AUTHENTICATED_USER,
 } from './keys';
 
 const initialState = {
   signin: null,
   errorMessage: null,
-  authenticated: null,
+  authenticated: false,
+  authenticatedUser: null,
   verifyotp: null,
 };
 
@@ -26,6 +28,12 @@ export default function authReducer(state = initialState, action) {
       return {
         ...state,
         authenticated: action.payload,
+      };
+    }
+    case AUTHENTICATED_USER: {
+      return {
+        ...state,
+        authenticatedUser: action.payload,
       };
     }
 
@@ -47,7 +55,7 @@ export default function authReducer(state = initialState, action) {
       return {
         signin: null,
         errorMessage: null,
-        authenticated: null,
+        authenticated: false,
       };
     }
     default:

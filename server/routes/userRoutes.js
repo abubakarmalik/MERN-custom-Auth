@@ -4,14 +4,12 @@ const {
   signinUser,
   signupUser,
   handleVerification,
+  resendOTP,
 } = require('../controllers/userController');
 
-//signin
 router.post('/signin', signinUser);
-
-//signup
 router.post('/signup', signupUser);
-
 router.post('/verifyotp', handleVerification);
+router.get('/resendotp', resendOTP);
 
 module.exports = router;

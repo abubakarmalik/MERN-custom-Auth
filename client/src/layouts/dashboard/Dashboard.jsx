@@ -3,26 +3,31 @@ import { Dialog } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkAuthentication, signoutUser } from '../../store/actions';
+import { signoutUser, getDashboard } from '../../store/actions';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Home = () => {
+  const authenticatedUser = useSelector(
+    (state) => state.authReducer.authenticatedUser
+  );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const authenticated = useSelector((state) => state.authReducer.authenticated);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
-    dispatch(checkAuthentication());
+    dispatch(getDashboard());
   }, []);
+
   useEffect(() => {
-    if (authenticated) setIsLoading(true);
-  }, [authenticated]);
+    setTimeout(() => {
+      setIsLoading(true);
+    }, 2000);
+  }, [authenticatedUser]);
 
   const handleSignout = () => {
     notifySuccess();
-    setIsLoading(false);
     setTimeout(() => {
       dispatch(signoutUser());
       navigate('/signin');
@@ -165,7 +170,7 @@ const Home = () => {
             <div className='text-center'>
               {isLoading ? (
                 <h4 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl'>
-                  Welcome {authenticated.name} !
+                  Welcome {authenticatedUser?.name || 'loading'} !
                 </h4>
               ) : (
                 <h1 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl'>

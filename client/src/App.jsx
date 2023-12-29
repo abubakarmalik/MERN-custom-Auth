@@ -15,15 +15,20 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/dashboard' element={<Dashboard />} />
+          <Route
+            path='/'
+            element={!authenticated ? <Home /> : <Navigate to='/dashboard' />}
+          />
+          <Route
+            path='/dashboard'
+            element={authenticated ? <Dashboard /> : <Navigate to='/' />}
+          />
           <Route path='/signin' element={<Signin />} />
           <Route path='/signup' element={<Signup />} />
           <Route path='/verify' element={<Verify />} />
           <Route path='/forget' element={<Forget />} />
           <Route path='/reset' element={<Reset />} />
         </Routes>
-        {authenticated && <Navigate to='/dashboard' replace />}
       </BrowserRouter>
     </>
   );

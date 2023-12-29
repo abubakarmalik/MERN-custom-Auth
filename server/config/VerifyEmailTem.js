@@ -26,7 +26,7 @@ const VerifyEmailTem = `
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 500px;">
           <tr>
             <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-              <p style="margin: 0;">Use the following OTP to complete your Sign Up procedures. OTP is valid for 5 minutes.</p>
+              <p style="margin: 0;">Use the following OTP to complete your Sign Up procedures. OTP is valid for 2 minutes.</p>
             </td>
           </tr>
           <tr>

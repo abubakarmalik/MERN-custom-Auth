@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { verifyOTP } from '../../store/actions';
+import { verifyOTP, resendOTP } from '../../store/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -95,7 +95,8 @@ const Verify = () => {
   const handleClieckResend = () => {
     setCountdown(120);
     setIsResendVisible(false);
-    setResetCountdown((prev) => !prev); // Toggle the reset state
+    setResetCountdown((prev) => !prev);
+    dispatch(resendOTP());
     console.log('Resend button clicked');
   };
 
