@@ -5,6 +5,7 @@ import {
   AUTHENTICATED,
   OTPVERIFY,
   AUTHENTICATED_USER,
+  RESET_MESSAGES,
 } from './keys';
 
 const initialState = {
@@ -48,6 +49,16 @@ export default function authReducer(state = initialState, action) {
       return {
         ...state,
         verifyotp: action.payload,
+      };
+    }
+    case RESET_MESSAGES: {
+      return {
+        ...state,
+        errorMessage: null,
+        signin: {
+          message: null,
+          authUser: state.signin.authUser,
+        },
       };
     }
 

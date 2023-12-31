@@ -127,7 +127,7 @@ const Verify = () => {
 
           <p className='mt-10 text-center text-sm text-gray-500'>
             Your Account is register but not Verified.Go to your inbox, we have
-            send OTP enter the OTP here
+            send OTP
           </p>
         </div>
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>

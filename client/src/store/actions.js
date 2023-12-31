@@ -5,6 +5,7 @@ import {
   AUTHENTICATED,
   AUTHENTICATED_USER,
   OTPVERIFY,
+  RESET_MESSAGES,
 } from './keys';
 import API from '../api/connection';
 
@@ -133,6 +134,12 @@ export const resendOTP = () => async (dispatch) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const resetMessages = () => (dispatch) => {
+  dispatch({
+    type: RESET_MESSAGES,
+  });
 };
 
 export const signoutUser = () => async (dispatch) => {

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { signupUser } from '../../store/actions';
+import { resetMessages, signupUser } from '../../store/actions';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -26,18 +26,19 @@ const Signup = () => {
   useEffect(() => {
     let timeoutId;
 
-    if (signinState !== null) {
+    if (signinState?.message || null !== null) {
       successMessage = signinState.message;
       if (isLoading) {
         timeoutId = setTimeout(() => {
           setIsloading(false);
           notifySuccess(successMessage);
           setTimeout(() => {
+            dispatch(resetMessages());
             navigate('/verify');
           }, 2000);
         }, 2000);
       }
-    } else if (errorState !== null) {
+    } else if (errorState?.message || null !== null) {
       errorMessage = errorState.message;
       if (isLoading) {
         timeoutId = setTimeout(() => {
@@ -92,8 +93,8 @@ const Signup = () => {
         .min(8, 'Password must be at least 8 characters')
         .max(14, 'Password must be at most 14 characters')
         .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/,
-          'Password must contain at least one letter, one number, and one special character'
+          /^(?=.*[A-Za-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]/,
+          'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
         )
         .required('Password is required'),
       cpassword: Yup.string()

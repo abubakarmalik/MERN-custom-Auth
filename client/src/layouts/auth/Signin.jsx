@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { signinUser } from '../../store/actions';
+import { signinUser, resetMessages } from '../../store/actions';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -26,18 +26,19 @@ const Signin = () => {
   useEffect(() => {
     let timeoutId;
 
-    if (signinState !== null) {
+    if (signinState?.message || null !== null) {
       successMessage = signinState.message;
       if (isLoading) {
         timeoutId = setTimeout(() => {
           setIsloading(false);
           notifySuccess(successMessage);
           setTimeout(() => {
+            dispatch(resetMessages());
             navigate('/dashboard');
-          }, 2000);
+          }, 3000);
         }, 2000);
       }
-    } else if (errorState !== null) {
+    } else if (errorState?.message || null !== null) {
       errorMessage = errorState.message;
       if (isLoading) {
         timeoutId = setTimeout(() => {
@@ -88,7 +89,6 @@ const Signin = () => {
       password: Yup.string().required('Password is required'),
     }),
     onSubmit: (values) => {
-      // Handle form submission here
       const { email, password } = values;
       const user = {
         email,
