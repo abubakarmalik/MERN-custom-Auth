@@ -6,6 +6,8 @@ import {
   OTPVERIFY,
   AUTHENTICATED_USER,
   RESET_MESSAGES,
+  FORGET_ACCOUNT,
+  UPDATE_PASSWORD,
 } from './keys';
 
 const initialState = {
@@ -14,6 +16,8 @@ const initialState = {
   authenticated: false,
   authenticatedUser: null,
   verifyotp: null,
+  forgetAccount: null,
+  updatePassword: null,
 };
 
 export default function authReducer(state = initialState, action) {
@@ -57,8 +61,21 @@ export default function authReducer(state = initialState, action) {
         errorMessage: null,
         signin: {
           message: null,
-          authUser: state.signin.authUser,
+          authUser: state?.signin?.authUser,
         },
+      };
+    }
+
+    case FORGET_ACCOUNT: {
+      return {
+        ...state,
+        forgetAccount: action.payload,
+      };
+    }
+    case UPDATE_PASSWORD: {
+      return {
+        ...state,
+        updatePassword: action.payload,
       };
     }
 
@@ -67,6 +84,10 @@ export default function authReducer(state = initialState, action) {
         signin: null,
         errorMessage: null,
         authenticated: false,
+        authenticatedUser: null,
+        verifyotp: null,
+        forgetAccount: null,
+        updatePassword: null,
       };
     }
     default:

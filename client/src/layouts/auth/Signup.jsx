@@ -102,7 +102,6 @@ const Signup = () => {
         .required('Confirm Password is required'),
     }),
     onSubmit: (values, { resetForm }) => {
-      // Handle form submission here
       const { name, email, password } = values;
       const user = {
         name,

@@ -26,6 +26,7 @@ const Verify = () => {
   const navigate = useNavigate();
   let successMessage = '';
   let errorMessage = '';
+
   useEffect(() => {
     let timeoutId;
 
@@ -36,7 +37,11 @@ const Verify = () => {
           setIsloading(false);
           notifySuccess(successMessage);
           setTimeout(() => {
-            navigate('/signin');
+            if (verifyOtp?.status === 0) {
+              navigate('/signin');
+            } else if (verifyOtp?.status === 1) {
+              navigate('/reset');
+            }
           }, 2000);
         }, 2000);
       }
@@ -53,6 +58,7 @@ const Verify = () => {
       clearTimeout(timeoutId);
     };
   }, [verifyOtp, errorState]);
+
   const formik = useFormik({
     initialValues: {
       otp: '',
@@ -60,10 +66,13 @@ const Verify = () => {
     validationSchema: Yup.object({
       otp: Yup.string().required('Enter OTP'),
     }),
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       const { otp } = values;
       setIsloading(true);
       dispatch(verifyOTP(otp));
+      setTimeout(() => {
+        resetForm();
+      }, 4000);
     },
   });
 
@@ -97,7 +106,6 @@ const Verify = () => {
     setIsResendVisible(false);
     setResetCountdown((prev) => !prev);
     dispatch(resendOTP());
-    console.log('Resend button clicked');
   };
 
   return (

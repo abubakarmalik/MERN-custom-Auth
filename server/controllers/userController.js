@@ -4,6 +4,7 @@ const generateOTP = require('../services/generateOTP');
 const formatDate = require('../services/formatDate');
 const createToken = require('../services/createToken');
 const sendVerificationEmail = require('../services/sendVerificationEmail');
+const sendForgetOTP = require('../services/sendForgetOTP');
 const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 
@@ -47,22 +48,27 @@ const signupUser = async (req, res) => {
   }
 };
 
+// handle verification
 const handleVerification = async (req, res) => {
   try {
     const { authorization } = req.headers;
+    const email = req.body.email;
     const otp = req.body.otp;
-    if (!authorization) {
-      return res.status(401).json({
-        authenticated: false,
-        error: 'Authorization token required',
-      });
+
+    let user;
+
+    if (authorization) {
+      const token = authorization.split(' ')[1];
+      const decodedToken = jwt.decode(token, { complete: true });
+      const userId =
+        decodedToken && decodedToken.payload ? decodedToken.payload._id : null;
+      const objectId = new ObjectId(userId);
+      user = await User.findOne({ _id: objectId });
     }
-    const token = authorization.split(' ')[1];
-    const decodedToken = jwt.decode(token, { complete: true });
-    const userId =
-      decodedToken && decodedToken.payload ? decodedToken.payload._id : null;
-    const objectId = new ObjectId(userId);
-    const user = await User.findOne({ _id: objectId });
+
+    if (email) {
+      user = await User.findOne({ email });
+    }
 
     if (!user) {
       return res.status(404).json({ message: 'Invalid Request' });
@@ -79,7 +85,17 @@ const handleVerification = async (req, res) => {
     await User.findByIdAndUpdate(user._id, {
       $set: { verifyOTP: null, otpExpiration: null, verify: true },
     });
-    return res.status(200).json({ message: 'Your Account has been verified' });
+    if (authorization) {
+      return res
+        .status(200)
+        .json({ message: 'Your account has been verified', status: 0 });
+    }
+
+    if (email) {
+      return res
+        .status(200)
+        .json({ message: 'Your email has been verified', status: 1 });
+    }
   } catch (error) {
     console.error('Error in signupUser:', error);
     return res.status(500).json({ message: 'Internal Server Error' });
@@ -87,7 +103,7 @@ const handleVerification = async (req, res) => {
 };
 
 // resend otp
-const resendOTP = async (req, res) => {
+const resendOTPVerify = async (req, res) => {
   try {
     const { authorization } = req.headers;
 
@@ -113,6 +129,33 @@ const resendOTP = async (req, res) => {
     const updatedUser = await User.findOne({ _id: objectId });
 
     await sendVerificationEmail(updatedUser);
+
+    return res.status(200).json({ message: 'Verify Your Email Address' });
+  } catch (error) {
+    console.error('Error in resendOTP:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+// resend otp forget
+const resendOTPForget = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(401).json({ message: 'Authorization email required' });
+    }
+
+    const user = await User.findOne({ email });
+
+    const otp = generateOTP(6);
+    const otpExpiration = Date.now() + 2 * 60 * 1000;
+
+    await User.findByIdAndUpdate(user._id, {
+      $set: { verifyOTP: otp, otpExpiration: otpExpiration },
+    });
+
+    const updatedUser = await User.findOne({ _id: user._id });
+    await sendForgetOTP(updatedUser);
 
     return res.status(200).json({ message: 'Verify Your Email Address' });
   } catch (error) {
@@ -157,4 +200,56 @@ const signinUser = async (req, res) => {
   }
 };
 
-module.exports = { signinUser, signupUser, handleVerification, resendOTP };
+// forget password
+const forgetPass = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found!' });
+    }
+    const otp = generateOTP(6);
+    const otpExpiration = Date.now() + 2 * 60 * 1000;
+
+    await User.findByIdAndUpdate(user._id, {
+      $set: { verifyOTP: otp, otpExpiration: otpExpiration },
+    });
+
+    const updatedUser = await User.findOne({ _id: user._id });
+    await sendForgetOTP(updatedUser);
+
+    return res.status(200).json({ message: 'Verify Your Email', email });
+  } catch (error) {
+    console.error('Error in signinUser:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// reset password
+const resetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorization request' });
+    }
+    const hash = await bcrypt.hash(password, 10);
+    await User.findByIdAndUpdate(user._id, {
+      $set: { password: hash },
+    });
+    return res.status(200).json({ message: 'Password has been updated' });
+  } catch (error) {
+    console.error('Error in signinUser:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+module.exports = {
+  signinUser,
+  signupUser,
+  handleVerification,
+  resendOTPVerify,
+  resendOTPForget,
+  forgetPass,
+  resetPassword,
+};

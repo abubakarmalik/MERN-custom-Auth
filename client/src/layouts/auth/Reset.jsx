@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetMessages } from '../../store/actions';
+import { updatePassword } from '../../store/actions';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,10 +14,44 @@ const ErrorMessage = ({ touched, error }) => {
 };
 
 const Reset = () => {
+  const updatePassState = useSelector(
+    (state) => state.authReducer.updatePassword
+  );
+  const errorState = useSelector((state) => state.authReducer.errorMessage);
   const [isLoading, setIsloading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  let successMessage = '';
+  let errorMessage = '';
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (updatePassState !== null) {
+      if (isLoading) {
+        successMessage = updatePassState.message;
+        timeoutId = setTimeout(() => {
+          setIsloading(false);
+          notifySuccess(successMessage);
+          setTimeout(() => {
+            navigate('/signin');
+          }, 2000);
+        }, 2000);
+      }
+    } else if (errorState !== null) {
+      if (isLoading) {
+        errorMessage = errorState.message;
+        timeoutId = setTimeout(() => {
+          setIsloading(false);
+          notifyError(errorMessage);
+        }, 2000);
+      }
+    }
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [updatePassState, errorState]);
 
   const formik = useFormik({
     initialValues: {
@@ -37,15 +71,55 @@ const Reset = () => {
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
         .required('Confirm Password is required'),
     }),
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       const { password } = values;
       setIsloading(true);
-      console.log(password);
+      dispatch(updatePassword(password));
+      setTimeout(() => {
+        resetForm();
+      }, 4000);
     },
   });
 
+  const notifySuccess = (message) => {
+    toast.success(message, {
+      position: 'top-center',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+  };
+  const notifyError = (message) => {
+    toast.error(message, {
+      position: 'top-center',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+  };
+
   return (
     <>
+      <ToastContainer
+        position='top-center'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light'
+      />
       <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <img
@@ -147,12 +221,12 @@ const Reset = () => {
 
           <p className='mt-10 text-center text-sm text-gray-500'>
             Already have an account?
-            <a
-              href='#'
+            <Link
+              to='/signin'
               className='font-semibold leading-6 text-indigo-600 hover:text-indigo-500 mx-1'
             >
               Signin
-            </a>
+            </Link>
           </p>
         </div>
       </div>

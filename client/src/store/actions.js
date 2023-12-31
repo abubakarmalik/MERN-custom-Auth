@@ -6,6 +6,8 @@ import {
   AUTHENTICATED_USER,
   OTPVERIFY,
   RESET_MESSAGES,
+  FORGET_ACCOUNT,
+  UPDATE_PASSWORD,
 } from './keys';
 import API from '../api/connection';
 
@@ -101,20 +103,34 @@ export const signinUser = (user) => async (dispatch) => {
 export const verifyOTP = (otp) => async (dispatch) => {
   try {
     const token = localStorage.getItem('token');
+    const email = localStorage.getItem('email');
 
-    const response = await API.post(
-      '/verifyotp',
-      { otp },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    let response;
+
+    if (token) {
+      response = await API.post(
+        '/verifyotp',
+        { otp },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    }
+
+    if (email) {
+      response = await API.post('/verifyotp', { otp, email });
+    }
+
     const { data } = response;
+
     dispatch({
       type: OTPVERIFY,
       payload: data,
     });
-    localStorage.removeItem('token');
+
+    if (token) {
+      localStorage.removeItem('token');
+    }
   } catch (error) {
     console.log(error);
     const { message } = error.response.data;
@@ -128,9 +144,17 @@ export const verifyOTP = (otp) => async (dispatch) => {
 export const resendOTP = () => async (dispatch) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await API.get('/resendotp', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const email = localStorage.getItem('email');
+
+    if (token) {
+      await API.get('/resendotp', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    }
+
+    if (email) {
+      await API.post('/resendotp', { email: email });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -140,6 +164,64 @@ export const resetMessages = () => (dispatch) => {
   dispatch({
     type: RESET_MESSAGES,
   });
+};
+
+export const forgetAccount = (email) => async (dispatch) => {
+  try {
+    const response = await API.post('/forget', { email });
+    const { data } = response;
+
+    localStorage.setItem('email', data?.email || null);
+
+    dispatch({
+      type: FORGET_ACCOUNT,
+      payload: data,
+    });
+    dispatch({
+      type: ERROR_OCCURRED,
+      payload: null,
+    });
+  } catch (error) {
+    const { message } = error.response.data;
+    dispatch({
+      type: FORGET_ACCOUNT,
+      payload: null,
+    });
+    dispatch({
+      type: ERROR_OCCURRED,
+      payload: { message },
+    });
+  }
+};
+
+export const updatePassword = (password) => async (dispatch) => {
+  try {
+    const email = localStorage.getItem('email');
+    const response = await API.post('/reset', { email, password });
+
+    const { data } = response;
+
+    dispatch({
+      type: UPDATE_PASSWORD,
+      payload: data,
+    });
+    dispatch({
+      type: ERROR_OCCURRED,
+      payload: null,
+    });
+
+    localStorage.removeItem('email');
+  } catch (error) {
+    const { message } = error.response.data;
+    dispatch({
+      type: UPDATE_PASSWORD,
+      payload: null,
+    });
+    dispatch({
+      type: ERROR_OCCURRED,
+      payload: { message },
+    });
+  }
 };
 
 export const signoutUser = () => async (dispatch) => {

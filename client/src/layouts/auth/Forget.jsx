@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetMessages } from '../../store/actions';
+import { resetMessages, forgetAccount } from '../../store/actions';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,10 +14,43 @@ const ErrorMessage = ({ touched, error }) => {
 };
 
 const Forget = () => {
+  const forgetState = useSelector((state) => state.authReducer.forgetAccount);
+  const errorState = useSelector((state) => state.authReducer.errorMessage);
   const [isLoading, setIsloading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  let successMessage = '';
+  let errorMessage = '';
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (forgetState?.message || null !== null) {
+      if (isLoading) {
+        successMessage = forgetState.message;
+        timeoutId = setTimeout(() => {
+          setIsloading(false);
+          notifySuccess(successMessage);
+          setTimeout(() => {
+            dispatch(resetMessages());
+            navigate('/verify');
+          }, 2000);
+        }, 2000);
+      }
+    } else if (errorState?.message || null !== null) {
+      if (isLoading) {
+        errorMessage = errorState.message;
+        timeoutId = setTimeout(() => {
+          setIsloading(false);
+          notifyError(errorMessage);
+        }, 2000);
+      }
+    }
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [forgetState, errorState]);
 
   const formik = useFormik({
     initialValues: {
@@ -28,15 +61,55 @@ const Forget = () => {
         .email('Invalid email address')
         .required('Email is required'),
     }),
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       const { email } = values;
       setIsloading(true);
-      console.log(email);
+      dispatch(forgetAccount(email));
+      setTimeout(() => {
+        resetForm();
+      }, 2000);
     },
   });
 
+  const notifySuccess = (message) => {
+    toast.success(message, {
+      position: 'top-center',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+  };
+  const notifyError = (message) => {
+    toast.error(message, {
+      position: 'top-center',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+  };
+
   return (
     <>
+      <ToastContainer
+        position='top-center'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light'
+      />
       <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <img

@@ -1,5 +1,5 @@
-// emailTemplate.js
-const VerifyEmailTem = `
+// ForgetEmailTem.js
+const ForgetEmailTem = `
    <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
       <td bgcolor="#4F46E5" align="center">
@@ -26,7 +26,7 @@ const VerifyEmailTem = `
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 500px;">
           <tr>
             <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-              <p style="margin: 0;">Use the following OTP to complete your Sign Up procedures. OTP is valid for 2 minutes.</p>
+              <p style="margin: 0;">Use the following OTP to reset your account. OTP is valid for 2 minutes.</p>
             </td>
           </tr>
           <tr>
@@ -48,12 +48,12 @@ const VerifyEmailTem = `
           </tr> 
          <tr>
             <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-              <p style="margin: 0;">If you did not create an account, no further action is required.</p>
+              <p style="margin: 0;">If you did not Request to forget, no further action is required.</p>
             </td>
           </tr>
           <tr>
             <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-              <p style="margin: 0;">Regards,<br>Abubakar Malik<br>MERN Developer</p>
+              <p style="margin: 0;">Regards,<br>Abubakar Malik<br>MERN Developer </p>
             </td>
           </tr>
         </table>
@@ -62,4 +62,4 @@ const VerifyEmailTem = `
   </table>
 `;
 
-module.exports = VerifyEmailTem;
+module.exports = ForgetEmailTem;
