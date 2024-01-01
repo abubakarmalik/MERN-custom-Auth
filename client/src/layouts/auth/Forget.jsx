@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetMessages, forgetAccount } from '../../store/actions';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Shape from '../../components/Shape';
 
 const ErrorMessage = ({ touched, error }) => {
   return touched && error ? (
@@ -110,6 +111,7 @@ const Forget = () => {
         pauseOnHover
         theme='light'
       />
+      <Shape />
       <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <img

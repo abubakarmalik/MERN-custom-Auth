@@ -5,6 +5,7 @@ const formatDate = require('../services/formatDate');
 const createToken = require('../services/createToken');
 const sendVerificationEmail = require('../services/sendVerificationEmail');
 const sendForgetOTP = require('../services/sendForgetOTP');
+const sendResetEmail = require('../services/sendResetEmail');
 const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 
@@ -237,6 +238,7 @@ const resetPassword = async (req, res) => {
     await User.findByIdAndUpdate(user._id, {
       $set: { password: hash },
     });
+    await sendResetEmail(user);
     return res.status(200).json({ message: 'Password has been updated' });
   } catch (error) {
     console.error('Error in signinUser:', error);

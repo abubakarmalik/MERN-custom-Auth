@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetMessages, signupUser } from '../../store/actions';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Shape from '../../components/Shape';
+import view from '../../assets/view.png';
+import hide from '../../assets/hide.png';
 
 const ErrorMessage = ({ touched, error }) => {
   return touched && error ? (
@@ -17,6 +20,8 @@ const Signup = () => {
   const signinState = useSelector((state) => state.authReducer.signin);
   const errorState = useSelector((state) => state.authReducer.errorMessage);
   const [isLoading, setIsloading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordVisibleCon, setPasswordVisibleCon] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -130,6 +135,7 @@ const Signup = () => {
         pauseOnHover
         theme='light'
       />
+      <Shape />
       <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 '>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <img
@@ -201,16 +207,27 @@ const Signup = () => {
                 Password
               </label>
               <div className='mt-2'>
-                <input
-                  id='password'
-                  name='password'
-                  type='password'
-                  placeholder='password'
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.password}
-                  className='block w-full rounded-md border-0 py-1.5 px-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 focus:outline-none'
-                />
+                <div className='relative flex items-center'>
+                  <input
+                    id='password'
+                    name='password'
+                    placeholder='Password'
+                    type={passwordVisible ? 'text' : 'password'}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.password}
+                    className='block w-full rounded-md border-0 py-1.5 px-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 focus:outline-none'
+                  />
+                  <div
+                    className='absolute inset-y-0 end-0 flex items-center pe-3.5 cursor-pointer'
+                    onClick={() => setPasswordVisible((prev) => !prev)}
+                  >
+                    <img
+                      src={passwordVisible ? hide : view}
+                      alt={passwordVisible ? 'Hide Password' : 'Show Password'}
+                    />
+                  </div>
+                </div>
               </div>
               <ErrorMessage
                 touched={formik.touched.password}
@@ -226,16 +243,29 @@ const Signup = () => {
                 Confirm Password
               </label>
               <div className='mt-2'>
-                <input
-                  id='cpassword'
-                  name='cpassword'
-                  type='password'
-                  placeholder='Confirm password'
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.cpassword}
-                  className='block w-full rounded-md border-0 py-1.5 px-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 focus:outline-none'
-                />
+                <div className='relative flex items-center'>
+                  <input
+                    id='cpassword'
+                    name='cpassword'
+                    placeholder='Confirm password'
+                    type={passwordVisibleCon ? 'text' : 'password'}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.cpassword}
+                    className='block w-full rounded-md border-0 py-1.5 px-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 focus:outline-none'
+                  />
+                  <div
+                    className='absolute inset-y-0 end-0 flex items-center pe-3.5 cursor-pointer'
+                    onClick={() => setPasswordVisibleCon((prev) => !prev)}
+                  >
+                    <img
+                      src={passwordVisibleCon ? hide : view}
+                      alt={
+                        passwordVisibleCon ? 'Hide Password' : 'Show Password'
+                      }
+                    />
+                  </div>
+                </div>
               </div>
               <ErrorMessage
                 touched={formik.touched.cpassword}

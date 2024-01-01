@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CountdownTimer from '../../components/CountdownTimer';
+import Shape from '../../components/Shape';
 
 const ErrorMessage = ({ touched, error }) => {
   return touched && error ? (
@@ -122,6 +123,7 @@ const Verify = () => {
         pauseOnHover
         theme='light'
       />
+      <Shape />
       <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <img
@@ -130,12 +132,11 @@ const Verify = () => {
             alt='Your Company'
           />
           <h2 className='mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900'>
-            Verify Your Email
+            Input Your OTP
           </h2>
 
           <p className='mt-10 text-center text-sm text-gray-500'>
-            Your Account is register but not Verified.Go to your inbox, we have
-            send OTP
+            Code has sent to register Email, Verify yourself !
           </p>
         </div>
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
@@ -149,7 +150,7 @@ const Verify = () => {
               </label>
               <div className='mt-2'>
                 <input
-                  placeholder='OTP'
+                  placeholder='Enter OTP'
                   id='otp'
                   name='otp'
                   type='text'
