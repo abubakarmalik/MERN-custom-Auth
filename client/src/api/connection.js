@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export default axios.create({
-  baseURL: 'http://localhost:6053/api',
+  baseURL: 'https://auth-backend-api-flame.vercel.app//api',
 });
